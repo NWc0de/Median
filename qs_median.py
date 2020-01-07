@@ -122,7 +122,7 @@ def process_head(header):
 
 def quickselect(arr, l, r, k):
     """Parition based selection algorithm derived from QuickSort."""
-    while (l != r):
+    while (l - r != 1):
         pivind, pivrange = partition(arr, l, r)
 
         if (k in pivrange):
@@ -139,12 +139,12 @@ def partition(arr, l, r):
     pivind = randint(l, r)
     pivrange = []
     swap(arr, pivind, r)
-    piv = arr[r] # pivot element is rightmost - shuffle ?
+    piv = arr[r]
     lind = l
     last = l
     for x in range(l, r):
         if (arr[x][0] == piv[0] and x - last == 1):
-            pivrange.append(x) #pivrange must be consecutive
+            pivrange.append(x) # pivrange must be consecutive
             last = x
         if (arr[x][0] <= piv[0]):
             swap(arr, x, lind)

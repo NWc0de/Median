@@ -115,5 +115,5 @@ if __name__=='__main__':
     print("QuickSelect results:\n")
     print("Average: ", qavg, " Median: ", qmed[0])
     print("-"*30)
-    print("TimSort (same of std library - statistics) resutls:")
+    print("TimSort (same as std library - statistics) resutls:")
     print("Average: ", savg, " Median: ", smed[0])
