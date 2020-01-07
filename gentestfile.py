@@ -19,7 +19,7 @@ def gen_testfile(count, fname):
             while (len(name.split(" ")) != 2):
                 name = fake.name()
             line = ", ".join(name.split(" ")) + ", " + str(randint(1, 100)) + "\n"
-            testf.write(line
+            testf.write(line)
 
 
 if __name__=="__main__":

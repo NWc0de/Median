@@ -1,6 +1,6 @@
 # Median Computation
 
-This repository contains a set of programs that extract data from csv files and compute the average, median, and name of entity with median age across all the files provided. The expected file format is a sequence of lines each containing 3 columns consisting of a first name, a last name, and an age. There are three main executables: qs_median (uses QuickSelect to determine median), heap_median (uses a pair of min/max heaps to determine median), and stat_median (uses Python's statistics library to determine median). All of these files can be executed as follows
+This repository contains a set of programs that extract data from csv files and compute the average, median, and name of entity with median age across all the files provided. The expected file format is a sequence of lines each containing 3 data points consisting of a first name, a last name, and an age. There are three main executables: qs_median (uses QuickSelect to determine median), heap_median (uses a pair of min/max heaps to determine median), and stat_median (uses Python's statistics library to determine median). All of these files can be executed as follows
 
 ```
 ~$ *_median.py file1.csv file2.csv ...
@@ -16,7 +16,7 @@ Results, available in the statistics section, indicate that the TimSort method (
 
 ## Implementation
 
-The final deliverable consists of three solutions (differing only in their algorithmic approach) that read data from multiple csv files (passed as command line arguments) and provide the average age, median age, and name of the entity with the median age (if one exists in the provided data). If no entity with the median age exists, the median age is reported along with a message indicating that no entity with that age was present in the data set. Additionally, the heap implementation takes the extra step of reporting the ages and names of the two entities that were used to compute the average median (the two entities the median age was inbetween).
+The final deliverable consists of three solutions (differing only in their algorithmic approach) that read data from multiple csv files (passed as command line arguments) and provide the average age, median age, and name of the entity with the median age (if one exists in the provided data). If no entity with the median age exists, the median age is reported along with a message indicating that no entity with that age was present in the data set. Additionally, the heap implementation takes the extra step of reporting the ages and names of the two entities that were used to compute the average median (the two entities with ages directly above and below the median).
 
 The processing of the user file is robust. The program is able to detect and recover from system errors associated with non-existent urls or other file I/O issues. If a file contains malformed data (not csv, no header line), the file is reported as improperly formatted and skipped. Additionally, the lines within each csv are processed dynamically, in the sense that each file can contain a different ordering of the (fname, lname, and age) as long as that ordering is consistent throughout the file and defined in the first line of the file (header line). Each line is matched with a dynamically generated regex prior to processing and if an improperly structured line is detected the file and line number of the anomaly is reported and the malformed line is skipped.
 
@@ -24,7 +24,7 @@ The regular expression is based on the header line. For instance, if the header 
 
 ## Correctness
 
-To demonstrate the correctness of each implementation I have included a tests.py file which computes the median and average of the provided data using Python's statistics library, then compares the results with the values returned by each respective method (QuickSort, heap, and TimSort). This file can be executed in the same way as the as the others
+A tests.py file is included to demonstrate the correctness of each implementation. The tests are conducted by computing the median and average of the provided data using Python's statistics library then comparing the results with the values returned by each respective method (QuickSort, heap, and TimSort). This file can be executed in the same way as the as the others
 
 ```
 ~$ python3 tests.py file1.csv file2.csv ...
@@ -34,17 +34,19 @@ Several files with alternative orderings (fname, age, lname) and (age, fname, ln
 
 ## Complexity
 *Heap Median - O(n log(n))*
-Each insertion requires O(log(n)) time, and there are at most n insertions. However, there is a tighter bound. Considering that the heap will grow logarithmically and initially the height will be 0, the only call that truly takes log(n) would be the final call and the height of heap will grow slowly in between those extremes.
+Each insertion requires O(log(n)) time, and there are at most n insertions. However, there is a tighter bound. Considering that the heap will grow logarithmically and initially the height will be 0, the only call that truly takes log(n) would be the final call. The height of heap will grow slowly in between those extremes.
 
 Considering the bound actually is lower than O(n log(n)) and heap median provides access to the median at any point in execution in O(1) time, it is certainly a good candidate for this problem. It would be the most effective approach if the stream of data was constant and the median was needed many times throughout the process.
 
 *TimSort - O(n log(n)) - omega(n)*
-Python's statistics library uses a very efficient algorithm, TimSort, to sort the data prior to selecting the median. This approach requires a slightly elevated amount of memory, a dictionary correlating age to a list of names must be maintained as well as a list of all ages to compute the median of. Nonetheless, analysis (results available below in the statistics section) showed that this algorithm is the most efficient, surpassing the heap algorithm by 28%. This approach is the most effective for median computations involving a large data set in which the median is needed only once.
+Python's statistics library uses a very efficient algorithm, TimSort, to sort the data prior to selecting the median. This approach requires a slightly elevated amount of memory, a dictionary correlating age to a list of names must be maintained as well as a list of all ages to compute the median of. Nonetheless, profiling (results available below in the statistics section) showed that this algorithm is the most efficient, surpassing the heap algorithm by 28%. This approach is the most effective for median computations involving a large data set in which the median is needed only once.
 
 *QuickSelect - O(n^2) - omega(n)*
-The final implementation uses QuickSelect with a randomized pivot. Despite the average complexity of O(n), this implementation performed very poorly as the size of data scaled. It was not able to complete the last test (10000000 lines) in 15 minutes, so no statistics are available for that case. This result shows this method is inferior to both the others and is not a strong candidate for this problem.
+The final implementation uses QuickSelect with a randomized pivot. This approach performed comparably to heap median, however without the additional benefit of constant time access to the median at any point. Despite the average O(n) execution time, QuickSelect still lagged behind TimSort, and as such offers no benefits over the other two approaches.
 
-I suspect that the possibility of selecting a bad pivot is more deleterious when the input scales because the damage done by selecting bad or sub-par pivots proliferates quickly when operating at scale. Given more time I would like to have explored QuickSelect's potential further, perhaps implementing a deterministic pivot selection method.
+However, it is interesting to note that QuickSort is particularly well suited for this problem, especially as the input size scales, because of the constraints of the numerical data (1-~110). In great quantity there will be many duplicate values. During the partitioning step, instead of determining if the pivot element is the desired element, a range of elements equal to the pivot element can be returned (all of which could effectively be in the place of the pivot).
+
+For instance if the desired element has rank 50 in a list of 100 ages and after partitioning the pivot index is 43 but all elements spanning 40-60 are equivalent, then 43 is effectively rank 50 and can be returned. This results in a significant improvement in the overall performance of the QuickSelect approach, especially at scale.
 
 ### Statistics
 Metrics below were generated with cProfile. Test files were generated with gentestfile.py (requires the Faker library).
@@ -81,27 +83,27 @@ Generated test file three (10000000 lines):
 **QuickSelect**
 
 All provided test files (including edge cases):
-115974 function calls (115909 primitive calls) in 0.056 seconds
+145397 function calls (145319 primitive calls) in 0.068 seconds
 
 Generated test file one (100000 lines):
-2115855 function calls (2115790 primitive calls) in 0.820 seconds
+1218115 function calls (1218037 primitive calls) in 0.539 seconds
 
 Generated test file two (1000000 lines):
-110827139 function calls (110827074 primitive calls) in 40.005 seconds
+12854759 function calls (12854681 primitive calls) in 6.208 seconds
 
 Generated test file three (10000000 lines):
-Unable to complete within 15 minutes, no data available.
+119136697 function calls (119136619 primitive calls) in 59.666 seconds
 
 
 ## Reflection
 
 1. What assumptions did you make in your design? Why?
 
-The only assumption I have made in my design is that the user will provide the data in a csv file with an initial line that describes the format of subsequent lines which contain only first names, last names, and ages in some order. My implementation doesn't make any assumption about the order. For instance, the user could create a file with age, lname, fname as the first line, and have each subsequent line contain an age then a last then first name.
+The only assumption I have made in my design is that the user will provide the data in a csv file with an initial line that describes the format of subsequent lines which contain only first names, last names, and ages in some order. My implementation doesn't make any assumption about the order. For instance, the user could create a file with age, lname, fname as the first line, and have each subsequent line contain an age then a last name then a first name.
 
 2. How would you change your program if it had to process many files where each file was over 10M records?
 
-While profiling I noticed that the regular expression matching method was responsible for about 30% of the overall runtime. There is significant potential for optimization there, perhaps with simplified parsing or error checking without regex.
+While profiling I noticed that the regular expression matching procedure was responsible for about 30% of the overall runtime. There is significant potential for optimization there, perhaps with simplified parsing or error checking without regex.
 
 3. How would you change your program if it had to process data from more than 10K URLs?
 

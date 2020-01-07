@@ -23,7 +23,7 @@ def compute_stats(file_urls):
         lines_procd += processed
     avg = 0 if lines_procd == 0 else clm_age/lines_procd
     med = (0, "No data processed.") if lines_procd == 0 else get_median(file_data)
-    
+
     return round(avg, 2), med, lines_procd
 
 def get_median(file_data):
@@ -123,9 +123,9 @@ def process_head(header):
 def quickselect(arr, l, r, k):
     """Parition based selection algorithm derived from QuickSort."""
     while (l != r):
-        pivind = partition(arr, l, r)
+        pivind, pivrange = partition(arr, l, r)
 
-        if (k == pivind):
+        if (k in pivrange):
             return arr[k]
         elif (k > pivind):
             l = pivind + 1
@@ -137,6 +137,7 @@ def quickselect(arr, l, r, k):
 def partition(arr, l, r):
     """Partitions a list around a random element."""
     pivind = randint(l, r)
+    pivrange = []
     swap(arr, pivind, r)
     piv = arr[r] # pivot element is rightmost - shuffle ?
     lind = l
@@ -144,8 +145,10 @@ def partition(arr, l, r):
         if (arr[x][0] <= piv[0]):
             swap(arr, x, lind)
             lind+=1
+        if (arr[x][0] == piv[0]): # element equal to pivot are effectivley same position
+            pivrange.append(x)
     swap(arr, lind, r)
-    return lind
+    return lind, pivrange
 
 
 def swap(arr, i, j):
