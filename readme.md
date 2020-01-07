@@ -108,3 +108,7 @@ While profiling I noticed that the regular expression matching procedure was res
 3. How would you change your program if it had to process data from more than 10K URLs?
 
 Processing many URLs would involve opening and closing a lot of files, which is an expensive operation. To mitigate this I would combine files initially, either on the command line with cat or with a Python script. Relating to what I discussed in question 2, I may also involve a preprocessing step in which the urls and the lines are validated and combined into files to be processed. This would allow for the program to be modular and make it easier to optimize specific tasks (ie. error checking, url validation, median computation).
+
+### Known Issues/To Do:
+
+There are some lines in file4.csv that contain international characters, only a few of which are not considered "word characters" by Python's regex. If filtering these inputs is desired, closer inspection of input lines will be necessary.
