@@ -1,6 +1,6 @@
 """
         Author: Spencer Little (mrlittle@uw.edu)
-        Last edit: 01/05/2020
+        Last edit: 01/06/2020
         A module that reads personal data from csv files and reports median and average statistics using quickselect.
 """
 

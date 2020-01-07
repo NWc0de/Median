@@ -1,5 +1,5 @@
 """
-        Author: Spencer Little
+        Author: Spencer Little (mrlittle@uw.edu)
         Last edit: 01/05/2020
         Generates csv files in the test format (fname, lname, age).
 """

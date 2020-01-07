@@ -1,6 +1,6 @@
 """
-        Author: Spencer Little
-        Last edit: 01/05/2020
+        Author: Spencer Little (mrlittle@uw.edu)
+        Last edit: 01/06/2020
         Computes median and average over a set of URLs using pythons standard library statistics module, then compares with heap_median and qs_median.
 """
 
@@ -24,7 +24,7 @@ def compute_stats(file_urls):
 
 def process_file(url, all_ages):
     """
-    Processes one URL by iterating through each line in the file, adding a tuple of (age, name) to the respective set of heaps, and returning the total age in years of all lines and the total lines processed.
+    Reads all lines from the provided url and passes the resulting list to process_lines for further processing.
     """
     lines = []
     try:
@@ -42,14 +42,14 @@ def process_file(url, all_ages):
 
 def process_lines(url, lines, all_ages):
     """
-    Reads each line in the lines list, checks input format, then inserts
-    a new age-name pair into the set of median heaps if the format is valid. Returns cumulative age of every entry in lines and the number of lines processed.
+    Reads each line in the lines list, checks input format, then adds the extracted age to the cumulative list if the format is valid. Returns cumulative age of every entry in lines and the number of lines processed.
     """
-    lformat = r"(?i)^( ?\w{2,20}\,){2} ?\d{1,3}$" # (0-1 spaces, 2-20 chars, a comma)x2 then 0-1 spaces, 1-3 digits
     form = process_head(lines[0].strip("\n"))
     if (form == None):
         print("File at", url, " improperly formatted. Skipping...\n")
         return 0, 0
+
+    lformat = build_regex(form)
     line_num = 1 # already processed line 1
     total_age = 0
     while (line_num < len(lines)):
@@ -62,6 +62,20 @@ def process_lines(url, lines, all_ages):
         age = int(udata[form["age"]])
         all_ages.append(age)
         line_num += 1
+
+def build_regex(form):
+    """Constructs a regex for validation of lines based on the form provided."""
+    reg = r"(?i)^"
+    for i in range(3):
+        elem = list(form.keys())[list(form.values()).index(i)]
+        if (elem != "age"):
+            reg += r"( ?\w{2,20})"
+        else:
+            reg += r"( ?\d{1,3})"
+        if (i < 2):
+            reg += "\,"
+
+    return reg + "$"
 
 def process_head(header):
     """

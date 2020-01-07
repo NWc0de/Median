@@ -1,6 +1,6 @@
 """
-        Author: Spencer Little
-        Last edit: 01/05/2020
+        Author: Spencer Little (mrlittle@uw.edu)
+        Last edit: 01/06/2020
         Computes median and average over a set of URLs using pythons standard library statistics module.
 """
 
