@@ -65,7 +65,7 @@ def process_lines(url, lines, min_heap, max_heap):
             continue
         udata = line.split(",")
         age = int(udata[form["age"]])
-        name = udata[form["lname"]] + ", " + udata[form["fname"]]
+        name = udata[form["lname"]].strip("\n") + ", " + udata[form["fname"]].strip("\n")
         insert_age(min_heap, max_heap, age, name)
         line_num += 1
         lines_procd += 1

@@ -81,10 +81,11 @@ def add_datapoint(age_name, all_ages, udata, form):
     Extracts line data, updates the age-name pair in the provided dictionary and adds the age to the cumulative list.
     """
     age = int(udata[form["age"]])
+    name = udata[form["lname"]].strip("\n") + ", " + udata[form["fname"]].strip("\n")
     if (age in age_name): # maintain dict { age - [names...] }
-        age_name[age].append(udata[form["lname"]] + ", " + udata[form["fname"]])
+        age_name[age].append(name)
     else:
-        age_name.update({age : [udata[form["lname"]] + ", " + udata[form["fname"]]]})
+        age_name.update({age : [name]})
     all_ages.append(age)
 
 def process_head(header):

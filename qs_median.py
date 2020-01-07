@@ -22,8 +22,9 @@ def compute_stats(file_urls):
         clm_age += total
         lines_procd += processed
     avg = 0 if lines_procd == 0 else clm_age/lines_procd
-
-    return round(avg, 2), get_median(file_data), lines_procd
+    med = (0, "No data processed.") if lines_procd == 0 else get_median(file_data)
+    
+    return round(avg, 2), med, lines_procd
 
 def get_median(file_data):
     """
@@ -79,7 +80,7 @@ def process_lines(url, lines, file_data):
             continue
         udata = line.split(",")
         age = int(udata[form["age"]])
-        name = udata[form["lname"]] + ", " + udata[form["fname"]]
+        name = udata[form["lname"]].strip("\n") + ", " + udata[form["fname"]].strip("\n")
         file_data.append((age, name))
         line_num += 1
         lines_procd += 1

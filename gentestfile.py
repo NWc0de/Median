@@ -13,11 +13,13 @@ def gen_testfile(count, fname):
     """
     fake = Faker()
     with open(fname, "w+") as testf:
-        testf.write('fname, lname, age\n')
+        testf.write('fname, lname, age\n') # filter names w/ more than two components
         for x in range(count):
-            line = ", ".join(fake.name().split(" ")) + ", " + str(randint(1, 100)) + "\n"
-            testf.write(line)
-
+            name = fake.name()
+            while (len(name.split(" ")) != 2):
+                name = fake.name()
+            line = ", ".join(name.split(" ")) + ", " + str(randint(1, 100)) + "\n"
+            testf.write(line
 
 
 if __name__=="__main__":
