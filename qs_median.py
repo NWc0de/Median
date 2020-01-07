@@ -141,12 +141,15 @@ def partition(arr, l, r):
     swap(arr, pivind, r)
     piv = arr[r] # pivot element is rightmost - shuffle ?
     lind = l
+    last = l
     for x in range(l, r):
+        if (arr[x][0] == piv[0] and x - last == 1):
+            pivrange.append(x) #pivrange must be consecutive
+            last = x
         if (arr[x][0] <= piv[0]):
             swap(arr, x, lind)
             lind+=1
-        if (arr[x][0] == piv[0]): # element equal to pivot are effectivley same position
-            pivrange.append(x)
+
     swap(arr, lind, r)
     return lind, pivrange
 
